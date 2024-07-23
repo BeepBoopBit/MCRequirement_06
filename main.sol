@@ -12,6 +12,7 @@ contract DegenToken is ERC20, Ownable {
     }
 
     mapping(uint256 => Item) public items;
+    mapping(address => mapping(uint256 => uint256)) public userItems;
     uint256 public nextItemId;
 
     constructor() ERC20("Degen", "DGN") Ownable(msg.sender) payable {}
@@ -36,10 +37,15 @@ contract DegenToken is ERC20, Ownable {
 
         _burn(msg.sender, cost);
         items[itemId].stock -= amount;
+        userItems[msg.sender][itemId] += amount;
     }
 
     function getItem(uint256 itemId) public view returns (string memory name, uint256 price, uint256 stock) {
         Item storage item = items[itemId];
         return (item.name, item.price, item.stock);
+    }
+
+    function getUserItem(address user, uint256 itemId) public view returns (uint256) {
+        return userItems[user][itemId];
     }
 }
